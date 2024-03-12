@@ -2,8 +2,9 @@ const resultado = document.querySelector("#resultado");
 const formulario = document.querySelector("#formulario");
 const paginacionDiv = document.querySelector("#paginacion");
 
-const registrosPorPagina = 10;
+const registrosPorPagina = 20;
 let totalPaginas;
+let limitePaginas = 10;
 let iterador;
 let paginaActual = 1;
 
@@ -88,6 +89,7 @@ function* crearPaginador(total) {
 function calcularPaginas(total) {
   return parseInt(Math.ceil(total / registrosPorPagina));
 }
+
 function mostrarImagenes(imagenes) {
   //Eliminar
   console.log(imagenes);
@@ -122,7 +124,7 @@ function mostrarImagenes(imagenes) {
           mt-5 
           p-1"
           href="${largeImageURL}" target="_blank" rel="noopener noreferrer">
-          Ver Imagen3
+          Ver Imagen
           </a>
           </div>
       </div>
@@ -132,15 +134,47 @@ function mostrarImagenes(imagenes) {
 
   //limpiar paginador previo
   limpiarHTML(paginacionDiv);
-  imprimirPaginador();
+  imprimirPaginador(limitePaginas);
 }
 
-function imprimirPaginador() {
-  iterador = crearPaginador(totalPaginas);
+function imprimirPaginador(paginas) {
+  iterador = crearPaginador(paginas);
 
   while (true) {
     const { value, done } = iterador.next();
-    if (done) return;
+
+    if (done) {
+      const boton2 = document.createElement("A");
+      boton2.href = "#";
+      boton2.dataset.pagina = value;
+      boton2.textContent = "...";
+      boton2.classList.add(
+        "siguiente",
+        "bg-yellow-400",
+        "px-4",
+        "py-1",
+        "mr-2",
+        "font-bold",
+        "mb-4",
+        "rounded"
+      );
+
+      paginacionDiv.appendChild(boton2);
+      boton2.onclick = () => {
+        if (limitePaginas >= totalPaginas) {
+          alert("Final de paginas alcanzado");
+        } else {
+          limitePaginas = limitePaginas + 10;
+          if (limitePaginas >= totalPaginas) {
+            limitePaginas = totalPaginas;
+          }
+        }
+        limpiarHTML(paginacionDiv);
+        imprimirPaginador(limitePaginas);
+      };
+
+      return;
+    }
     // Caso contrario genera un boton por cada elemento del generador
     const boton = document.createElement("A");
     boton.href = "#";
